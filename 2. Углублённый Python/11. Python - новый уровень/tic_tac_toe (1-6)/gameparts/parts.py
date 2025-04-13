@@ -35,6 +35,13 @@ class Board:
             return True
         
         return False
+    
+    def save_result(self, result):
+        """Сохранение результатов всех игр в отдельный файл."""
+
+        # Открытие файла в режиме добавления.
+        with open('results.txt', 'a', encoding='utf-8') as file:
+            file.write(result)
 
     # Переопределяем метод __str__.
     def __str__(self):

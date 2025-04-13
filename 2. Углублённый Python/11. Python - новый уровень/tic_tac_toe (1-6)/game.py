@@ -70,10 +70,12 @@ def main():
         # Проверка на выйгрышь.
         if game.check_win(current_player):
             print(f'Победили {current_player}.')
+            game.save_result(f'Победили {current_player}.')
             running = False
         # Проверка на ничью.
         elif game.is_board_full():
             print('Ничья!')
+            game.save_result('Ничья!')
             running = False
         # Тернарный оператор, через который реализована смена игроков.
         # Если current_player равен X, то новым значением будет O,
