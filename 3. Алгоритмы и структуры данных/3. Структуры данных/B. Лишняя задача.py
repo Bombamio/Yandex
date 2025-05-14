@@ -26,6 +26,7 @@ def solution(node, idx):
     last_node.next_item = node.next_item
     return start_node
 
+
 # Тестирующая функция для проверки решения.
 # Не изменяйте её, она не требует вашего внимания.
 def test():
