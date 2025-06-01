@@ -26,7 +26,7 @@ def is_correct_bracket_seq(brackets):
     len_brackets = len(brackets)
     if len_brackets == 0:
         return True
-    
+
     brackets_stack = Stack()
     for i in brackets:
         if i in ('(', '[', '{'):
@@ -43,6 +43,7 @@ def is_correct_bracket_seq(brackets):
             else:
                 return False
     return False if brackets_stack.size() != 0 else True
+
 
 if __name__ == '__main__':
     """Главная фукция."""
