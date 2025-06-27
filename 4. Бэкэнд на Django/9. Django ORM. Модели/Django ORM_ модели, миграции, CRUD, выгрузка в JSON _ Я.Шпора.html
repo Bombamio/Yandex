@@ -1,0 +1,851 @@
+
+<!-- saved from url=(0160)https://code.s3.yandex.net/Python-dev/cheatsheets/029-django-orm-modeli-migratsii-crud-vygruzka-v-json/029-django-orm-modeli-migratsii-crud-vygruzka-v-json.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Django ORM: модели, миграции, CRUD, выгрузка в JSON&nbsp;| Я.Шпора</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style>
+<link rel="apple-touch-icon" sizes="180x180" href="https://code.s3.yandex.net/Python-dev/cheatsheets/static/ico/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://code.s3.yandex.net/Python-dev/cheatsheets/static/ico/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://code.s3.yandex.net/Python-dev/cheatsheets/static/ico/favicon-16x16.png">
+<link rel="manifest" href="https://code.s3.yandex.net/Python-dev/cheatsheets/static/ico/site.webmanifest">
+<link rel="mask-icon" href="https://code.s3.yandex.net/Python-dev/cheatsheets/static/ico/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="https://code.s3.yandex.net/Python-dev/cheatsheets/static/ico/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="../static/ico/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+<link href="./Django ORM_ модели, миграции, CRUD, выгрузка в JSON _ Я.Шпора_files/prism.css" rel="stylesheet">
+<script src="./Django ORM_ модели, миграции, CRUD, выгрузка в JSON _ Я.Шпора_files/prism.js.Без названия"></script>
+<link href="./Django ORM_ модели, миграции, CRUD, выгрузка в JSON _ Я.Шпора_files/custom.css" rel="stylesheet">
+<script src="./Django ORM_ модели, миграции, CRUD, выгрузка в JSON _ Я.Шпора_files/custom.js.Без названия"></script>
+<!--<base target="_blank">--><base href="." target="_blank">
+</head><body cz-shortcut-listen="true"><article id="40b38550-6654-4b5d-bacf-352d7263a51f" class="page sans"><header><h1 class="page-title">Django ORM: модели, миграции, CRUD, выгрузка в JSON | Я.Шпора</h1><p class="page-description"></p></header><div class="page-body"><p id="06c6e91e-0c08-48cd-9f11-e1ea3544a1ee" class="">Модели Django обычно хранят в файлах <em>models.py </em>в папках приложений. Модели наследуются от класса <code>Model</code> из модуля <code>models</code>.</p><pre id="cf7db6f5-052c-4469-bc9e-1849fbcb7c05" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># Импорт модуля с классом Model, от этого класса наследуются модели:</span>
+<span class="token keyword">from</span> django<span class="token punctuation">.</span>db <span class="token keyword">import</span> models
+
+<span class="token keyword">class</span> <span class="token class-name">VideoProduct</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    title <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span></code></pre><h2 id="f40b67bc-e13a-4388-b330-752eb9818036" class="">Типы полей</h2><p id="e7e87ef4-c446-46ae-98b1-a3bb4e4709bb" class="">Тип поля модели указывается при помощи специальных классов. Вот несколько популярных типов (в скобках — название аналогичного типа в SQL):</p><p id="73e785fa-bdff-40f7-87f4-90575224b59b" class=""><code>models.IntegerField()</code> — натуральное число (INTEGER);</p><p id="a06611cb-0329-4dee-ace7-9307f510f73e" class=""><code>models.FloatField()</code> — число с плавающей точкой (REAL);</p><p id="82e2a7db-3c1e-4e69-9125-e71df7c193c5" class=""><code>models.BooleanField()</code> — булев тип <code>False</code>/<code>True</code> (BOOL);</p><p id="5963de4e-e3d2-4743-99ab-fde2ebc5cce2" class=""><code>models.CharField()</code> — строка, текстовое поле с ограничением по числу символов (VARCHAR);</p><p id="da11196a-a781-4139-91da-5b6fedf6cc63" class=""><code>models.TextField()</code> — текстовое поле (TEXT);</p><p id="3c3b2391-774d-4d51-aed2-4f4da6485184" class=""><code>models.DateField()</code> — дата, как <code>datetime.date</code> в Python (DATE);</p><p id="dd42c60d-f59b-4041-9043-74ff5c418472" class=""><code>models.DateTimeField()</code> — дата и время, как <code>datetime.datetime</code> в Python (DATATIME);</p><p id="bdedafb5-9158-4d9b-bcca-12c232badfe7" class=""><code>models.SlugField()</code> — «слаг», строка, содержащая только цифры, буквы латиницы и символы <code>-</code> и <code>_</code>. Обычно слаг используют для создания человекочитаемых URL;</p><p id="541cb148-0336-41bc-ac4e-8e730a030835" class=""><code>models.ImageField()</code> — изображения.</p><h2 id="aaa57aa9-1344-412e-964c-1b5927ad4bce" class="">Связь 1:1 </h2><p id="6733313b-ae32-49cc-873a-3ace237b9ae2" class="">При связи «один-к-одному» каждая запись одной таблицы БД может быть связана только с одной из записей другой таблицы.</p><p id="c10f5953-3143-432b-9792-626c745e7739" class="">Для описания связи «один к одному» в моделях используется тип поля <code>models.OneToOneField()</code>.</p><pre id="557f7598-72a1-4ecf-99d8-80fb08dfb320" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># models.py</span>
+<span class="token keyword">class</span> <span class="token class-name">OriginalTitle</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    title <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span>
+
+<span class="token keyword">class</span> <span class="token class-name">VideoProduct</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    title <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span>
+    <span class="token comment"># Описываем поле, ссылающееся на модель OriginalTitle:</span>
+    original_title <span class="token operator">=</span> models<span class="token punctuation">.</span>OneToOneField<span class="token punctuation">(</span>
+        <span class="token comment"># На какую модель ссылаемся:</span>
+        OriginalTitle<span class="token punctuation">,</span>
+        <span class="token comment"># Поведение при удалении:</span>
+        <span class="token comment"># если связанный объект модели OriginalTitle будет удалён,</span>
+        <span class="token comment"># то и объект класса VideoProduct будет удалён. </span>
+        on_delete<span class="token operator">=</span>models<span class="token punctuation">.</span>CASCADE
+    <span class="token punctuation">)</span></code></pre><p id="878abfd5-acd6-4c05-a556-df24a8491255" class=""><code>on_delete</code> —  обязательный параметр для ссылающихся полей (<code>OneToOneField</code>, <code>ForeighnKey</code>, <code>ManyToManyField</code>). </p><p id="b93449ca-f4ea-45d4-b3b3-708787235721" class="">Параметр <code>on_delete</code> может принимать разные значения:</p><ul id="8ba3ac53-3ab4-4bf5-8c89-de3f52a5d10c" class="bulleted-list"><li style="list-style-type:disc"><code>on_delete=models.CASCADE</code> — если удаляется запись <code>OriginalTitle</code>, то будет удалена и ссылающаяся на неё запись из таблицы <code>VideoProduct</code>. </li></ul><ul id="6a9b256d-d19c-44fd-88a3-19577748cb1f" class="bulleted-list"><li style="list-style-type:disc"><code>on_delete=models.SET_NULL</code> — при удалении объекта, на который ведёт ссылка, в ссылающихся записях вместо ссылки на объект будет установлен <code>NULL</code>.</li></ul><ul id="1a10efd9-948d-4999-82d7-3eadc72511ed" class="bulleted-list"><li style="list-style-type:disc"><code>on_delete=models.SET_DEFAULT</code> — при удалении объекта, на который ведёт ссылка, в ссылающихся записях вместо ссылки на объект будет установлено значение по умолчанию, указанное в параметре <code>default</code> поля ссылки.</li></ul><p id="d1b12990-9db5-4b8f-ae34-2343cf2c0cc9" class="">Для <code>on_delete</code> есть и <a href="https://docs.djangoproject.com/en/3.2/ref/models/fields/#arguments">другие аргументы</a>:  <code>PROTECT</code> , <code>RESTRICT</code> и <code>DO_NOTHING</code>.</p><h2 id="363b6eab-db9e-4842-b7e4-b63ca27c7bf9" class="">Связь N:1</h2><p id="dc5c9ef6-ef12-4e34-8a11-165235f6d060" class="">Связь «многие-к-одному» позволяет связать несколько записей одной таблицы с одной и той же записью другой таблицы.</p><p id="cc17c944-cb8a-4125-9059-62b58f59e8f4" class="">В моделях связь «многие-к-одному» указывается в поле типа <code>ForeignKey</code>:</p><pre id="e3fb753f-f4d4-422e-a323-e407e15d63ee" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># models.py</span>
+<span class="token keyword">from</span> django<span class="token punctuation">.</span>db <span class="token keyword">import</span> models
+
+<span class="token keyword">class</span> <span class="token class-name">ProductType</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    title <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span>
+
+<span class="token keyword">class</span> <span class="token class-name">VideoProduct</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+    product_type <span class="token operator">=</span> models<span class="token punctuation">.</span>ForeignKey<span class="token punctuation">(</span>
+        ProductType<span class="token punctuation">,</span>
+        on_delete<span class="token operator">=</span>models<span class="token punctuation">.</span>CASCADE
+    <span class="token punctuation">)</span></code></pre><p id="876bedaa-13d7-42ec-9ce9-59dc55aad624" class="">В описании связи обязательно должен быть указан аргумент <code>on_delete</code>.</p><h2 id="e32f326e-7e12-4042-bd3b-aaca1d080a9e" class="">Связь N:M</h2><p id="254d3203-5f62-4788-a1fd-cf38c7bf0c80" class="">Связь «многие-ко-многим» позволяет связать каждую запись первой таблицы с несколькими записями второй, а каждую запись второй таблицы — с несколькими записями первой.</p><p id="e2348374-9656-47c2-83b8-8c1574a53f62" class="">В Django есть разные варианты для создания связи «многие-ко-многим».</p><p id="c4655480-cdf7-43e5-9f61-b373d0251fbe" class=""><strong>Через промежуточную модель, созданную вручную:</strong></p><pre id="2fa0b06c-3b65-45e6-9658-3255bf90eb05" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># models.py</span>
+<span class="token keyword">from</span> django<span class="token punctuation">.</span>db <span class="token keyword">import</span> models
+
+<span class="token keyword">class</span> <span class="token class-name">VideoProduct</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    title <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Director</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    full_name <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Промежуточная модель: в ней указываются связи.</span>
+<span class="token keyword">class</span> <span class="token class-name">DirectorVideoProduct</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    video_product <span class="token operator">=</span> models<span class="token punctuation">.</span>ForeignKey<span class="token punctuation">(</span>VideoProduct<span class="token punctuation">,</span> on_delete<span class="token operator">=</span>models<span class="token punctuation">.</span>CASCADE<span class="token punctuation">)</span>
+    director <span class="token operator">=</span> models<span class="token punctuation">.</span>ForeignKey<span class="token punctuation">(</span>Director<span class="token punctuation">,</span> on_delete<span class="token operator">=</span>models<span class="token punctuation">.</span>CASCADE<span class="token punctuation">)</span></code></pre><p id="3427e02b-f8e6-462f-b270-83e3e86b8419" class=""><strong>Через поле</strong><strong> типа</strong> <code>models.ManyToManyField()</code>:</p><pre id="1b710b14-8a63-4a13-b107-c4738cacc06a" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># models.py</span>
+<span class="token keyword">from</span> django<span class="token punctuation">.</span>db <span class="token keyword">import</span> models
+
+<span class="token keyword">class</span> <span class="token class-name">Director</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    full_name <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span>
+
+<span class="token keyword">class</span> <span class="token class-name">VideoProduct</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    title <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span>
+    directors <span class="token operator">=</span> models<span class="token punctuation">.</span>ManyToManyField<span class="token punctuation">(</span>Director<span class="token punctuation">)</span>  <span class="token comment"># Поле N:M.</span></code></pre><p id="12371666-6fcd-42db-bc6c-3c5f94acfc90" class="">
+</p><p id="de49c626-56da-4e7d-9b13-4fa792b8aa09" class="">При использовании поля <code>ManyToManyField()</code> автоматически создаётся промежуточная таблица, которая реализует связь «многие ко многим».</p><p id="26bd3306-6c2f-4c62-956d-0369b2c60be1" class="">При использовании поля <code>ManyToManyField()</code> промежуточную таблицу тоже можно создать вручную:</p><ul id="6f6f4100-f0bd-46e3-b1cb-13a79aeefa4d" class="bulleted-list"><li style="list-style-type:disc">описывается промежуточная модель с нужными полями;</li></ul><ul id="7e5969f6-6624-47c1-a207-0c7dbd9606b1" class="bulleted-list"><li style="list-style-type:disc">промежуточная модель указывается в параметре <code>through</code> поля <code>ManyToManyField()</code>:</li></ul><pre id="b2c5b3f8-ba80-421c-921e-5da6516cf732" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># models.py</span>
+<span class="token keyword">from</span> django<span class="token punctuation">.</span>db <span class="token keyword">import</span> models
+
+<span class="token keyword">class</span> <span class="token class-name">Director</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    full_name <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span>
+
+<span class="token keyword">class</span> <span class="token class-name">VideoProduct</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    title <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">128</span><span class="token punctuation">)</span>
+    <span class="token comment"># Параметр through указывает, какую модель надо назначить промежуточной:</span>
+    directors <span class="token operator">=</span> models<span class="token punctuation">.</span>ManyToManyField<span class="token punctuation">(</span>Director<span class="token punctuation">,</span> through<span class="token operator">=</span><span class="token string">'Partnership'</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Промежуточная модель:</span>
+<span class="token keyword">class</span> <span class="token class-name">Partnership</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># Поле, ссылающееся на модель Director:</span>
+    director <span class="token operator">=</span> models<span class="token punctuation">.</span>ForeignKey<span class="token punctuation">(</span>Director<span class="token punctuation">,</span> on_delete<span class="token operator">=</span>models<span class="token punctuation">.</span>CASCADE<span class="token punctuation">)</span>
+    <span class="token comment"># Поле, ссылающееся на модель VideoProduct:</span>
+    videoproduct <span class="token operator">=</span> models<span class="token punctuation">.</span>ForeignKey<span class="token punctuation">(</span>VideoProduct<span class="token punctuation">,</span> on_delete<span class="token operator">=</span>models<span class="token punctuation">.</span>CASCADE<span class="token punctuation">)</span>
+    <span class="token comment"># Дополнительные поля:</span>
+    <span class="token comment"># дата начала работы режиссёра над фильмом...</span>
+    date_joined <span class="token operator">=</span> models<span class="token punctuation">.</span>DateField<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment"># ...и история о том, почему на фильм пригласили именно этого режиссёра.</span>
+    invite_reason <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">300</span><span class="token punctuation">)</span></code></pre><h2 id="00b1ee42-aee2-4114-a85b-eacdcee1eaeb" class=""><strong>Имя для обратной связи между таблицами</strong></h2><p id="3a1e33dd-15e2-4f22-bcda-0a7fd6cba882" class="">Для объектов, на которые ссылаются поля типа <code>ForeignKey</code>, ORM создаёт специальный интерфейс, через который можно получить доступ к объектам исходной модели: если модель <code>First</code> ссылается на модель <code>Second</code>, то из модели <code>Second</code> тоже можно обратиться к модели <code>First</code>. </p><p id="a96d450f-861b-40a7-843b-97853f8b3748" class="">Для создания такого «интерфейса обратной связи» используется опциональный параметр <code>related_name</code>.</p><pre id="0dfdfa2a-027e-4dea-8b0f-fb9af3b85375" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token keyword">from</span> django<span class="token punctuation">.</span>db <span class="token keyword">import</span> models
+
+<span class="token keyword">class</span> <span class="token class-name">Author</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">100</span><span class="token punctuation">)</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Book</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    title <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">100</span><span class="token punctuation">)</span>
+    author <span class="token operator">=</span> models<span class="token punctuation">.</span>ForeignKey<span class="token punctuation">(</span>
+				Author<span class="token punctuation">,</span> 
+				on_delete<span class="token operator">=</span>models<span class="token punctuation">.</span>CASCADE<span class="token punctuation">,</span> 
+				related_name<span class="token operator">=</span><span class="token string">'books'</span>
+		<span class="token punctuation">)</span></code></pre><p id="d1f5fa01-0999-4a7d-a2b1-05448c1f5905" class="">Если какой-то объект модели <code>Book</code> ссылается на объект модели <code>Author</code>, то при установленном параметре <code>related_name</code> из объекта <code>Author</code> можно получить ссылающиеся на него объекты <code>Book</code>:</p><pre id="812b1569-d6c2-408c-a51c-24ca11fe224c" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token keyword">from</span> django<span class="token punctuation">.</span>db <span class="token keyword">import</span> models
+
+<span class="token keyword">class</span> <span class="token class-name">Author</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">100</span><span class="token punctuation">)</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Book</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    title <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">100</span><span class="token punctuation">)</span>
+    <span class="token comment"># Поле author ссылается на объект модели Author (на автора книги):</span>
+    author <span class="token operator">=</span> models<span class="token punctuation">.</span>ForeignKey<span class="token punctuation">(</span>Author<span class="token punctuation">,</span> on_delete<span class="token operator">=</span>models<span class="token punctuation">.</span>CASCADE<span class="token punctuation">,</span> related_name<span class="token operator">=</span><span class="token string">'books'</span><span class="token punctuation">)</span></code></pre><p id="100e1527-e7eb-4502-b3a3-c7f1ab75410b" class="">Пример применения <code>related_name</code>:</p><pre id="ae44b1a4-88ec-4caa-9871-f8d54f6450ca" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># Получаем объект автора с заданным значением поля name:</span>
+author <span class="token operator">=</span> Author<span class="token punctuation">.</span>objects<span class="token punctuation">.</span>get<span class="token punctuation">(</span>name<span class="token operator">=</span><span class="token string">'Александр Пушкин'</span><span class="token punctuation">)</span>
+<span class="token comment"># По related_name books получаем все объекты, ссылающиеся на полученный объект автора:</span>
+pushkin_books <span class="token operator">=</span> author<span class="token punctuation">.</span>books<span class="token punctuation">.</span><span class="token builtin">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre><p id="c002b566-cd2b-44c8-b4e3-fbc6087c1102" class="">Если разработчик не указал явным образом в модели значение параметра <code>related_name</code>, это значение будет сгенерировано автоматически — из названия модели и суффикса <code>_set</code>. Таким образом, для приведённого примера <code>related_name</code> было бы <code>book_set</code>. </p><pre id="7c524eba-de20-40f8-8c2e-e87269af576f" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">author <span class="token operator">=</span> Author<span class="token punctuation">.</span>objects<span class="token punctuation">.</span>get<span class="token punctuation">(</span>name<span class="token operator">=</span><span class="token string">'Александр Пушкин'</span><span class="token punctuation">)</span>
+pushkin_books <span class="token operator">=</span> author<span class="token punctuation">.</span>book_set<span class="token punctuation">.</span><span class="token builtin">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre><h2 id="610436e6-0b12-4f51-ad4b-d9849bc0a398" class="">Абстрактные модели</h2><p id="02ff70ab-d4b5-4da6-bff5-70c68dbde39e" class="">Абстрактные модели не создают таблиц в БД. Чтобы объявить модель абстрактной, необходимо во вложенном классе <code>Meta</code> объявить атрибут <code>abstract</code> со значение <code>True</code>.</p><pre id="40c0030e-addd-4a25-bc6c-c88eb1037af0" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token keyword">class</span> <span class="token class-name">BaseModel</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token triple-quoted-string string">"""
+    Абстрактная модель. 
+    Добавляет к модели дату создания и последнего изменения. 
+    """</span>
+    created_at <span class="token operator">=</span> models<span class="token punctuation">.</span>DateTimeField<span class="token punctuation">(</span>auto_now_add<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+    modified_at <span class="token operator">=</span> models<span class="token punctuation">.</span>DateTimeField<span class="token punctuation">(</span>auto_now_add<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">,</span> auto_now<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+    <span class="token comment"># С помощью необязательного внутреннего класса Meta можно добавить</span>
+    <span class="token comment"># к модели дополнительные настройки. </span>
+    <span class="token keyword">class</span> <span class="token class-name">Meta</span><span class="token punctuation">:</span>
+        <span class="token comment"># Эта строка объявляет модель абстрактной:</span>
+        abstract <span class="token operator">=</span> <span class="token boolean">True</span></code></pre><h2 id="fd6c08b5-28b8-4bde-aaac-b19a88023b80" class="">Подключение базы данных к Django</h2><p id="d92bbde3-5b18-40c5-ba84-9b39ea96492b" class="">Настройки подключения к БД в Django-проекте указываются в константе <code>DATABASES</code> в <em>settings.py</em>:</p><pre id="a8ecaa0e-5cdc-4bdb-8db1-66b04fc862ba" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># &lt;название проекта&gt;/settings.py</span>
+
+DATABASES <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token string">'default'</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        <span class="token comment"># К проекту по умолчанию подключена СУБД SQLite:  </span>
+        <span class="token string">'ENGINE'</span><span class="token punctuation">:</span> <span class="token string">'django.db.backends.sqlite3'</span><span class="token punctuation">,</span>
+        <span class="token comment"># Файл с базой данных находится в одной папке с manage.py.</span>
+        <span class="token string">'NAME'</span><span class="token punctuation">:</span> BASE_DIR <span class="token operator">/</span> <span class="token string">'db.sqlite3'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre><h2 id="b39b7ad5-943b-4cba-b1f9-2397758d048d" class="">Миграции</h2><p id="72df4c32-9120-4c2f-ac50-1baac72efdf7" class=""><strong>Миграции</strong> — это процесс автоматического создания и применения изменений в базе данных на основе моделей приложения.</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="a7d1bd5f-2da0-46dd-a6f7-8a33f9d59c68"><div style="font-size:1.5em"></div><div style="width:100%"><strong>Файлы миграции каждого приложения следует добавлять в git: миграции — это неотъемлемая часть проекта.</strong></div></figure><p id="780dfb79-d54f-4599-aa17-67de1ea5eac0" class="">Команды:</p><ul id="fde36306-90ba-4c0d-bcdb-022f1ea89e36" class="bulleted-list"><li style="list-style-type:disc"><code>python manage.py makemigrations</code> — создание новых миграций на основе изменений, внесённых в модели.</li></ul><ul id="c8813b16-2f15-483e-908b-70d223c332a3" class="bulleted-list"><li style="list-style-type:disc"><code>python manage.py migrate</code> — применение миграций.</li></ul><ul id="6f7b102c-2430-4751-844b-8d0b0c0f1818" class="bulleted-list"><li style="list-style-type:disc"><code>python manage.py sqlmigrate &lt;имя приложения&gt; &lt;номер миграции&gt;</code> — отображение SQL-запросов, которые будут отправлены при миграции.</li></ul><h2 id="fb6268b9-993d-4b77-ba75-70ccdb9d684e" class="">CRUD-операции</h2><p id="7f63927e-ec3d-41ab-a411-6ab8e350ad3a" class="">Операции с реляционными базами данных делят на четыре группы:</p><ul id="58e43833-ac8f-4d52-8e8d-bcc9d46785ab" class="bulleted-list"><li style="list-style-type:disc"><strong>Create</strong> — создание записей.</li></ul><ul id="eba12950-de2d-484d-b1a6-701a32a9ceca" class="bulleted-list"><li style="list-style-type:disc"><strong>Read</strong> — чтение записей.</li></ul><ul id="b654fa81-d653-4101-8304-9b802ef39baa" class="bulleted-list"><li style="list-style-type:disc"><strong>Update</strong> — изменение записей.</li></ul><ul id="0b2a13dc-bc32-4277-a075-267f25d5d7f3" class="bulleted-list"><li style="list-style-type:disc"><strong>Delete</strong> — удаление записей.</li></ul><p id="bf254768-c956-410a-a107-defbf6676582" class="">Все примеры будут основаны на модели <code>Category</code>:</p><pre id="7ee40e7c-eb88-4b26-90f2-c725920a9479" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token keyword">from</span> django<span class="token punctuation">.</span>db <span class="token keyword">import</span> models
+
+<span class="token keyword">class</span> <span class="token class-name">Category</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    title <span class="token operator">=</span> models<span class="token punctuation">.</span>CharField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">256</span><span class="token punctuation">)</span>
+    slug <span class="token operator">=</span> models<span class="token punctuation">.</span>SlugField<span class="token punctuation">(</span>max_length<span class="token operator">=</span><span class="token number">64</span><span class="token punctuation">,</span> unique<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+    output_order <span class="token operator">=</span> models<span class="token punctuation">.</span>PositiveSmallIntegerField<span class="token punctuation">(</span>default<span class="token operator">=</span><span class="token number">100</span><span class="token punctuation">)</span></code></pre><h3 id="d460fae0-b817-4802-9952-6fdbf3561e8d" class="">Create</h3><p id="a1c10377-f652-4cd2-b6c5-22231bac556c" class="">Создать новую запись в БД и вернуть объект модели: метод <code>.create()</code>.</p><pre id="6cb69619-f34d-4e6c-a17a-72d4ae520eaa" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> Category<span class="token punctuation">.</span>objects<span class="token punctuation">.</span>create<span class="token punctuation">(</span>
+    title<span class="token operator">=</span><span class="token string">'Категория, созданная через shell'</span><span class="token punctuation">,</span> 
+    slug<span class="token operator">=</span><span class="token string">'shell_category'</span>
+<span class="token punctuation">)</span>
+<span class="token operator">&lt;</span>Category<span class="token punctuation">:</span> Category <span class="token builtin">object</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">&gt;</span></code></pre><h3 id="4825d677-858f-422d-bc97-717710bea7f0" class="">Read</h3><p id="c0d59f5e-3160-4e36-86f5-1fcd92d0066e" class="">Получить все объекты модели: метод <code>.all()</code>.</p><pre id="4273c730-ff9a-42c9-bc6e-cd22db934863" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> Category<span class="token punctuation">.</span>objects<span class="token punctuation">.</span><span class="token builtin">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token operator">&lt;</span>QuerySet <span class="token punctuation">[</span><span class="token operator">&lt;</span>Category<span class="token punctuation">:</span> Category <span class="token builtin">object</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">&gt;</span><span class="token punctuation">,</span> <span class="token operator">&lt;</span>Category<span class="token punctuation">:</span> Category <span class="token builtin">object</span> <span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token operator">&gt;</span><span class="token punctuation">]</span><span class="token operator">&gt;</span></code></pre><p id="768d3428-8b2c-44eb-a0b4-51493a0ee315" class="">Поиск объектов по заданным признакам: метод <code>.filter()</code>.</p><pre id="3d07d30d-5f7a-40e3-b0c1-98af500b4c00" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># Получить объект, у которого поле slug содержит значение 'shell_category':</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> Category<span class="token punctuation">.</span>objects<span class="token punctuation">.</span><span class="token builtin">filter</span><span class="token punctuation">(</span>slug<span class="token operator">=</span><span class="token string">'shell_category'</span><span class="token punctuation">)</span>
+<span class="token operator">&lt;</span>QuerySet <span class="token punctuation">[</span><span class="token operator">&lt;</span>Category<span class="token punctuation">:</span> Category <span class="token builtin">object</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">&gt;</span><span class="token punctuation">]</span><span class="token operator">&gt;</span></code></pre><p id="c977ebbf-dcee-4d23-8851-068145c9397d" class="">Получить отдельный объект из БД: метод <code>.get()</code>.</p><pre id="3750e059-8056-4227-ac80-2a6801f83730" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> Category<span class="token punctuation">.</span>objects<span class="token punctuation">.</span>get<span class="token punctuation">(</span>pk<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>  <span class="token comment"># Получить объект, у которого Primary Key равен 1</span>
+<span class="token operator">&lt;</span>Category<span class="token punctuation">:</span> Category <span class="token builtin">object</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">&gt;</span></code></pre><h3 id="dbd1e153-701f-4ab2-aa05-abe44e170b27" class="">Update</h3><p id="d34e85f6-a103-4650-af06-239db5e62b39" class="">Изменить объект можно двумя способами.</p><ol type="1" id="a81b8134-8330-40bd-a7b5-120afd0c4895" class="numbered-list" start="1"><li>Получить коллекцию объектов и присвоить одному или нескольким полям этих объектов новые значения:<pre id="2e19b20c-cf0f-407b-adc3-acb7bce48e6c" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># Category.objects.all() возвращает QuerySet со всеми объектами модели,</span>
+<span class="token comment"># а метод update() меняет свойства всех объектов:</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> Category<span class="token punctuation">.</span>objects<span class="token punctuation">.</span><span class="token builtin">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>update<span class="token punctuation">(</span>title<span class="token operator">=</span><span class="token string">'Изменённое поле категории'</span><span class="token punctuation">,</span> is_published<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+<span class="token comment"># В ответ получим количество изменённых записей:</span>
+<span class="token number">2</span></code></pre></li></ol><ol type="1" id="2ea3d624-b02d-4b1c-982c-ef579d5be111" class="numbered-list" start="2"><li>Получить один объект, присвоить новое значение одному из его полей и вызвать метод <code>.save()</code>:<pre id="d80c621d-681c-40ae-8ca2-1ce463cce539" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># Получаем объект и сохраняем его в переменную category_for_change:</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> category_for_change <span class="token operator">=</span> Category<span class="token punctuation">.</span>objects<span class="token punctuation">.</span>get<span class="token punctuation">(</span>pk<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token comment"># Меняем значение одного из полей: </span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> category_for_change<span class="token punctuation">.</span>title <span class="token operator">=</span> <span class="token string">'Ещё раз изменённое поле категории'</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> category_for_change<span class="token punctuation">.</span>is_published <span class="token operator">=</span> <span class="token boolean">False</span>
+<span class="token comment"># Новое значение присвоено объекту модели, но в БД всё ещё хранится старое значение.</span>
+<span class="token comment"># Чтобы сохранить новое значение в базе данных — вызываем метод save():</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> category_for_change<span class="token punctuation">.</span>save<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment"># Смотрим информацию из обновлённых полей:</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> Category<span class="token punctuation">.</span>objects<span class="token punctuation">.</span>get<span class="token punctuation">(</span>pk<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span>title 
+<span class="token string">'Ещё раз изменённое поле категории'</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> Category<span class="token punctuation">.</span>objects<span class="token punctuation">.</span>get<span class="token punctuation">(</span>pk<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span>is_published
+<span class="token boolean">False</span></code></pre></li></ol><h3 id="fd50b106-b383-473d-9836-a4cc575eb22c" class="">Delete</h3><p id="5d0f64ab-de8b-4549-af6f-dbbc9d990b52" class="">Для удаления объектов применяют метод <code>.delete()</code>.</p><pre id="f9bf1470-4396-4114-b704-90c14e83a17f" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> category_for_delete <span class="token operator">=</span> Category<span class="token punctuation">.</span>objects<span class="token punctuation">.</span>get<span class="token punctuation">(</span>pk<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> category_for_delete<span class="token punctuation">.</span>delete<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment"># Будет выведено</span>
+<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token string">'ice_cream.Category'</span><span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre><p id="570e6d9e-4696-4653-b32c-b8a362f02fc6" class="">Удалить набор объектов:</p><pre id="1cadcd6d-81c5-4c01-9e7b-aeb12033fafb" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># Получаем QuerySet и удаляем все содержащиеся в нём объекты:</span>
+Category<span class="token punctuation">.</span>objects<span class="token punctuation">.</span><span class="token builtin">all</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>delete<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre><h2 id="7ac7b70a-c174-4bb3-841c-2d35d92362a1" class=""><strong>JSON для н</strong><strong>аполнения БД</strong><strong> и для выгрузки информации</strong></h2><p id="c6ea5798-69ce-41b8-89bd-f48751e59154" class=""><mark class="highlight-default">Загрузить</mark> данные из файла <em>db.json</em> (имя может быть любым) в базу данных:</p><pre id="a30058e8-aaee-40c4-9447-890cc14d94d1" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">python manage<span class="token punctuation">.</span>py loaddata db<span class="token punctuation">.</span>json</code></pre><p id="76832292-9a26-4239-8db4-a8b77a90087e" class="">Выгрузить данные из БД в файл <em>db.json</em>:</p><pre id="968dc3f3-90db-4d36-b77a-617f1ed963e4" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">python manage<span class="token punctuation">.</span>py dumpdata <span class="token operator">-</span>o db<span class="token punctuation">.</span>json</code></pre><p id="a7c24163-e003-4354-907a-9afc43f7085f" class="">Выгрузить данные из приложения <strong>ice_cream</strong> в файл <em>ice_cream.json</em>:</p><pre id="15e887d0-743f-45db-b85b-274676f93965" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">python manage<span class="token punctuation">.</span>py dumpdata ice_cream <span class="token operator">-</span>o ice_cream<span class="token punctuation">.</span>json</code></pre><p id="e01e01bb-155d-4130-ab21-4a1ae7e851ea" class="">Сохранить данные из отдельной таблицы в файл <em>ice_cream_icecream.json</em>:</p><pre id="69714cec-95ad-472a-9e98-6470bb257d19" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># Сохраняем данные модели icecream приложения ice_cream:</span>
+python manage<span class="token punctuation">.</span>py dumpdata ice_cream<span class="token punctuation">.</span>icecream <span class="token operator">-</span>o ice_cream_icecream<span class="token punctuation">.</span>json</code></pre><p id="943151b3-695c-428b-b691-cd798f628020" class="">Экспортировать все таблицы за исключением перечисленных (<code>--exclude</code>) в файл <em>without_ice_cream_icecream.json</em>:</p><pre id="b7a8315e-46cf-4752-893b-1ba74a843b1a" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all"><span class="token comment"># Сохраняем все данные из проекта, кроме данных модели icecream приложения ice_cream:</span>
+python manage<span class="token punctuation">.</span>py dumpdata <span class="token operator">-</span><span class="token operator">-</span>exclude ice_cream<span class="token punctuation">.</span>icecream <span class="token operator">-</span>o without_ice_cream_icecream<span class="token punctuation">.</span>json</code></pre><p id="dca405da-6015-4fc0-aa16-fc6388c3fe0d" class="">При создании фикстур может возникнуть проблема с кодировкой; фикстуры будут созданы, но прочесть кириллицу будет невозможно.</p><p id="efa238d5-02c5-4e0b-bfe1-4fdc9d599f27" class="">Решением проблемы будет добавление ключа <code>-Xutf8</code> для <code>python</code>. Например:</p><pre id="68c0aff0-2327-4f51-854f-28a9e3240ad2" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">python <span class="token operator">-</span>Xutf8 manage<span class="token punctuation">.</span>py dumpdata <span class="token operator">-</span><span class="token operator">-</span>indent <span class="token number">2</span> <span class="token operator">-</span>o indented_db<span class="token punctuation">.</span>json</code></pre><p id="8a44adcb-80ff-4538-a4a8-1bd0e46e2974" class="">Если данные были экспортированы на одном компьютере, а залить базу надо на другом — возникнет проблема: при импорте данных будет выброшено исключение <code>IntegrityError</code>.</p><p id="99c75f07-a7ed-4588-9895-e0addbf4dbd4" class="">Чтобы избежать ошибки, при создании фикстуры нужно исключить таблицу <code>contenttypes</code>:</p><pre id="af19fa92-a0c8-40d4-a977-3d88fb3e2371" class="code language-python" tabindex="0"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">python manage<span class="token punctuation">.</span>py dumpdata <span class="token operator">-</span><span class="token operator">-</span>exclude contenttypes <span class="token operator">-</span>o db<span class="token punctuation">.</span>json</code></pre><p id="eb66f51e-d809-4f12-97d1-6af95abb6fc3" class="">Проблемы при импорте могут возникнуть и с таблицей <code>auth.permission</code>, которая хранит информацию о правах пользователей. Эту таблицу тоже можно исключить из фикстур: <code>--exclude auth.permission</code>.</p><p id="1c9797bc-a783-4536-944b-4e99090621cc" class="">
+</p><p id="c4240751-93f3-4174-8655-398b68ca35b4" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span>
+<div id="footer">
+	<div id="saying" class="sans">
+		<div class="text">Память обманчива, а шпаргалка — верный спутник.</div> 
+        <div class="src">Секстий Забывчивый, древнеримский мыслитель</div>
+	</div>
+</div>
+<deepl-input-controller translate="no"><template shadowrootmode="open"><link rel="stylesheet" href="chrome-extension://cofdbpoegempjloogbagkncekinflcnj/build/content.css"><div dir="ltr" style="visibility: initial !important;"><div class="dl-input-translation-container svelte-95aucy"><div></div></div></div></template></deepl-input-controller></body></html>
