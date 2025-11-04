@@ -1,0 +1,12 @@
+GET https://api.github.com/users/yandex-praktikum
+
+###
+
+POST https://jsonplaceholder.typicode.com/posts
+Content-Type: application/json
+
+{
+    "title": "My Title",
+    "body": "My text",
+    "userId": 1
+}
